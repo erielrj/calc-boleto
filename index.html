@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parcelas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    input[type="number"],
+    input[type="text"],
+    select,
+    button {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    table {
+      width: 100%;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Calculadora de Parcelas</h2>
+    <form id="parcelForm">
+      <div>
+        <label for="totalValue">Valor Total (BRL):</label>
+        <input type="number" id="totalValue" name="totalValue" min="0" step="0.01" required>
+      </div>
+      <div>
+        <label for="currentDate">Data Atual:</label>
+        <input type="text" id="currentDate" name="currentDate" value="" readonly>
+      </div>
+      <div>
+        <label for="numOfInstallments">Número de Parcelas:</label>
+        <select id="numOfInstallments" name="numOfInstallments" required>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <div>
+        <label for="daysToFirstPayment">Dias para o Primeiro Pagamento:</label>
+        <input type="number" id="daysToFirstPayment" name="daysToFirstPayment" min="0" required>
+      </div>
+      <div>
+        <label for="daysBetweenPayments">Dias entre Pagamentos:</label>
+        <input type="number" id="daysBetweenPayments" name="daysBetweenPayments" min="0" required>
+      </div>
+      <button type="button" onclick="generateInstallments()">Gerar</button>
+    </form>
+
+    <h2>Parcelas Geradas</h2>
+    <table id="installmentsTable">
+      <thead>
+        <tr>
+          <th>Valor</th>
+          <th>Data</th>
+        </tr>
+      </thead>
+      <tbody id="installmentsBody">
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+ function generateInstallments() {
+      const totalValue = parseFloat(document.getElementById('totalValue').value);
+      const currentDate = new Date();
+      const numOfInstallments = parseInt(document.getElementById('numOfInstallments').value);
+      const daysToFirstPayment = parseInt(document.getElementById('daysToFirstPayment').value);
+      const daysBetweenPayments = parseInt(document.getElementById('daysBetweenPayments').value);
+
+      const installmentsBody = document.getElementById('installmentsBody');
+      installmentsBody.innerHTML = '';
+
+      let currentValue = totalValue / numOfInstallments;
+      let currentPaymentDate = new Date(currentDate.getTime() + (daysToFirstPayment * 24 * 60 * 60 * 1000));
+
+      for (let i = 0; i < numOfInstallments; i++) {
+        const row = installmentsBody.insertRow();
+        const valueCell = row.insertCell(0);
+        const dateCell = row.insertCell(1);
+
+        valueCell.textContent = currentValue.toFixed(2);
+        dateCell.textContent = formatDate(currentPaymentDate);
+
+        currentPaymentDate = new Date(currentPaymentDate.getTime() + (daysBetweenPayments * 24 * 60 * 60 * 1000));
+      }
+    }
+
+    function formatDate(date) {
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    window.onload = function() {
+      const currentDateInput = document.getElementById('currentDate');
+      const currentDate = new Date();
+      const formattedDate = formatDate(currentDate);
+      currentDateInput.value = formattedDate;
+    };
+  </script>
+</body>
+</html>
